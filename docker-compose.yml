@@ -1,0 +1,40 @@
+services:
+  h2-afetto:
+    image: oscarfonts/h2
+    container_name: h2-afetto
+    restart: always
+    environment:
+      H2_OPTIONS: -ifNotExists
+    ports:
+      - "81:81"
+      - "1521:1521"
+    volumes:
+      - h2-volume:/opt/h2-data
+    networks:
+      - afetto-network
+
+  afetto-api:
+    image: iagoliziero/afetto-api:v1.1
+    container_name: afetto-api
+    restart: always
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:h2:tcp://h2-afetto:1521/afettodb
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.h2.Driver
+      SPRING_DATASOURCE_USERNAME: sa
+      SPRING_DATASOURCE_PASSWORD: ""
+      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.H2Dialect
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_H2_CONSOLE_ENABLED: "true"
+      SPRING_H2_CONSOLE_SETTINGS_WEB_ALLOW_OTHERS: "true"
+    ports:
+      - "8080:8080"
+    depends_on:
+      - h2-afetto
+    networks:
+      - afetto-network
+
+networks:
+  afetto-network:
+
+volumes:
+  h2-volume:

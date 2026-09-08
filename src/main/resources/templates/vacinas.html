@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <title>Afetto - Vacinas</title>
+
+  <link rel="stylesheet" href="/css/style.css">
+
+</head>
+
+<body>
+
+<header class="header">
+
+  <h2>Afetto</h2>
+
+  <nav>
+
+    <a href="/">Início</a>
+    <a href="/pets">Pets</a>
+    <a href="/vacinas">Vacinas</a>
+
+  </nav>
+
+</header>
+
+
+<main class="container">
+
+  <h1>Vacinas</h1>
+
+
+  <section class="form-card">
+
+    <h2>Cadastrar vacina</h2>
+
+
+    <form id="vacinaForm">
+
+      <input
+              id="nomeVacina"
+              placeholder="Nome da vacina"
+              required
+      >
+
+
+      <input
+              id="fabricante"
+              placeholder="Fabricante"
+      >
+
+
+      <input
+              id="lote"
+              placeholder="Lote"
+      >
+
+
+      <label>Data de aplicação</label>
+
+      <input
+              id="dataAplicacao"
+              type="date"
+              required
+      >
+
+
+      <label>Próxima dose</label>
+
+      <input
+              id="proximaDose"
+              type="date"
+      >
+
+
+      <textarea
+              id="observacoes"
+              placeholder="Observações">
+            </textarea>
+
+
+      <input
+              id="idPet"
+              placeholder="ID do Pet"
+              required
+      >
+
+
+      <button type="submit">
+        Cadastrar Vacina
+      </button>
+
+    </form>
+
+
+    <p id="mensagemVacina"></p>
+
+  </section>
+
+
+  <section class="form-card">
+
+    <h2>Consultar situação vacinal</h2>
+
+
+    <input
+            id="petStatusId"
+            placeholder="ID do Pet"
+    >
+
+
+    <button onclick="consultarStatus()">
+      Consultar
+    </button>
+
+
+    <div id="resultadoStatus"></div>
+
+  </section>
+
+
+  <section>
+
+    <h2>Vacinas cadastradas</h2>
+
+    <div
+            id="listaVacinas"
+            class="cards">
+    </div>
+
+  </section>
+
+</main>
+
+
+<script>
+
+  async function carregarVacinas() {
+
+    const response =
+            await fetch("/vacina?page=0&size=50");
+
+
+    if (!response.ok) {
+      return;
+    }
+
+
+    const dados =
+            await response.json();
+
+
+    const lista =
+            document.getElementById(
+                    "listaVacinas"
+            );
+
+
+    lista.innerHTML = "";
+
+
+    dados.content.forEach(vacina => {
+
+
+      const card =
+              document.createElement("div");
+
+
+      card.className = "card";
+
+
+      card.innerHTML = `
+
+                <h3>
+                    ${vacina.nomeVacina}
+                </h3>
+
+                <p>
+                    Aplicação:
+                    ${vacina.dataAplicacao}
+                </p>
+
+                <p>
+                    Próxima dose:
+                    ${vacina.proximaDose ?? "Não definida"}
+                </p>
+
+            `;
+
+
+      lista.appendChild(card);
+
+    });
+
+  }
+
+
+  document
+          .getElementById("vacinaForm")
+          .addEventListener("submit", async function(event) {
+
+
+            event.preventDefault();
+
+
+            const vacina = {
+
+              nomeVacina:
+              document
+                      .getElementById("nomeVacina")
+                      .value,
+
+              fabricante:
+              document
+                      .getElementById("fabricante")
+                      .value,
+
+              lote:
+              document
+                      .getElementById("lote")
+                      .value,
+
+              dataAplicacao:
+              document
+                      .getElementById("dataAplicacao")
+                      .value,
+
+              proximaDose:
+                      document
+                              .getElementById("proximaDose")
+                              .value || null,
+
+              observacoes:
+              document
+                      .getElementById("observacoes")
+                      .value,
+
+              idPet:
+              document
+                      .getElementById("idPet")
+                      .value,
+
+              idHistorico:
+                      null
+            };
+
+
+            const response =
+                    await fetch("/vacina", {
+
+                      method: "POST",
+
+                      headers: {
+
+                        "Content-Type":
+                                "application/json"
+
+                      },
+
+                      body:
+                              JSON.stringify(vacina)
+
+                    });
+
+
+            if (response.ok) {
+
+              document
+                      .getElementById(
+                              "mensagemVacina"
+                      )
+                      .innerText =
+                      "Vacina cadastrada com sucesso!";
+
+
+              document
+                      .getElementById(
+                              "vacinaForm"
+                      )
+                      .reset();
+
+
+              carregarVacinas();
+
+            } else {
+
+              document
+                      .getElementById(
+                              "mensagemVacina"
+                      )
+                      .innerText =
+                      "Erro ao cadastrar vacina";
+
+            }
+
+          });
+
+
+  async function consultarStatus() {
+
+
+    const idPet =
+            document
+                    .getElementById(
+                            "petStatusId"
+                    )
+                    .value;
+
+
+    const response =
+            await fetch(
+                    `/pet/${idPet}/status-vacinacao`
+            );
+
+
+    const resultado =
+            document.getElementById(
+                    "resultadoStatus"
+            );
+
+
+    if (!response.ok) {
+
+      resultado.innerHTML =
+              "<p>Pet não encontrado.</p>";
+
+      return;
+    }
+
+
+    const status =
+            await response.json();
+
+
+    resultado.innerHTML = `
+
+            <div class="status-card">
+
+                <h3>${status.pet}</h3>
+
+                <p>
+                    Total de vacinas:
+                    ${status.totalVacinas}
+                </p>
+
+                <p>
+                    Vacinas atrasadas:
+                    ${status.vacinasAtrasadas}
+                </p>
+
+                <p>
+                    Próximas vacinas:
+                    ${status.proximasVacinas}
+                </p>
+
+                <p>
+                    Vacinas em dia:
+                    ${status.vacinasEmDia}
+                </p>
+
+                <strong>
+                    Status:
+                    ${status.status}
+                </strong>
+
+            </div>
+
+        `;
+
+  }
+
+
+  carregarVacinas();
+
+</script>
+
+
+</body>
+
+</html>

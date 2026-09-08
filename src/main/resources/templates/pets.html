@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <title>Afetto - Pets</title>
+
+  <link rel="stylesheet" href="/css/style.css">
+
+</head>
+
+<body>
+
+<header class="header">
+
+  <h2>Afetto</h2>
+
+  <nav>
+
+    <a href="/">Início</a>
+    <a href="/pets">Pets</a>
+    <a href="/vacinas">Vacinas</a>
+
+  </nav>
+
+</header>
+
+
+<main class="container">
+
+  <h1>Meus Pets</h1>
+
+
+  <section class="form-card">
+
+    <h2>Cadastrar Pet</h2>
+
+    <form id="petForm">
+
+      <input
+              id="nome"
+              placeholder="Nome"
+              required
+      >
+
+      <select id="especie">
+
+        <option value="CACHORRO">
+          Cachorro
+        </option>
+
+        <option value="GATO">
+          Gato
+        </option>
+
+        <option value="COELHO">
+          Coelho
+        </option>
+
+        <option value="AVE">
+          Ave
+        </option>
+
+        <option value="OUTRO">
+          Outro
+        </option>
+
+      </select>
+
+
+      <input
+              id="raca"
+              placeholder="Raça"
+      >
+
+
+      <select id="sexo">
+
+        <option value="MACHO">
+          Macho
+        </option>
+
+        <option value="FEMEA">
+          Fêmea
+        </option>
+
+      </select>
+
+
+      <input
+              id="peso"
+              type="number"
+              step="0.1"
+              placeholder="Peso"
+      >
+
+
+      <input
+              id="dataNasc"
+              type="date"
+      >
+
+
+      <textarea
+              id="descricao"
+              placeholder="Descrição">
+            </textarea>
+
+
+      <input
+              id="idUsuario"
+              placeholder="ID do usuário"
+              required
+      >
+
+
+      <button type="submit">
+        Cadastrar Pet
+      </button>
+
+    </form>
+
+    <p id="mensagem"></p>
+
+  </section>
+
+
+  <section>
+
+    <h2>Pets cadastrados</h2>
+
+    <div id="listaPets" class="cards"></div>
+
+  </section>
+
+</main>
+
+
+<script>
+
+  async function carregarPets() {
+
+    const response =
+            await fetch("/pet?page=0&size=50");
+
+    if (!response.ok) {
+      return;
+    }
+
+    const dados =
+            await response.json();
+
+    const lista =
+            document.getElementById("listaPets");
+
+    lista.innerHTML = "";
+
+
+    dados.content.forEach(pet => {
+
+      const card =
+              document.createElement("div");
+
+      card.className = "card";
+
+
+      card.innerHTML = `
+
+                <h3>${pet.nome}</h3>
+
+                <p>
+                    IdPet: ${pet.id}
+                </p>
+
+                <p>
+                    Espécie: ${pet.especie}
+                </p>
+
+                <p>
+                    Raça: ${pet.raca ?? "-"}
+                </p>
+
+            `;
+
+
+      lista.appendChild(card);
+
+    });
+
+  }
+
+
+  document
+          .getElementById("petForm")
+          .addEventListener("submit", async function(event) {
+
+            event.preventDefault();
+
+
+            const pet = {
+
+              nome:
+              document.getElementById("nome").value,
+
+              especie:
+              document.getElementById("especie").value,
+
+              raca:
+              document.getElementById("raca").value,
+
+              sexo:
+              document.getElementById("sexo").value,
+
+              peso:
+                      Number(
+                              document.getElementById("peso").value
+                      ),
+
+              dataNasc:
+              document.getElementById("dataNasc").value,
+
+              descricao:
+              document.getElementById("descricao").value,
+
+              idUsuario:
+              document.getElementById("idUsuario").value
+            };
+
+
+            const response =
+                    await fetch("/pet", {
+
+                      method: "POST",
+
+                      headers: {
+                        "Content-Type":
+                                "application/json"
+                      },
+
+                      body:
+                              JSON.stringify(pet)
+
+                    });
+
+
+            if (response.ok) {
+
+              document
+                      .getElementById("mensagem")
+                      .innerText =
+                      "Pet cadastrado com sucesso!";
+
+              document
+                      .getElementById("petForm")
+                      .reset();
+
+              carregarPets();
+
+            } else {
+
+              document
+                      .getElementById("mensagem")
+                      .innerText =
+                      "Erro ao cadastrar pet";
+
+            }
+
+          });
+
+
+  carregarPets();
+
+</script>
+
+</body>
+
+</html>

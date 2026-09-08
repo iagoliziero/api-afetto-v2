@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Afetto - Login</title>
+
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body class="login-body">
+
+<div class="login-container">
+
+  <div class="login-card">
+
+    <h1>Afetto</h1>
+
+    <p>Entre para acompanhar seus pets</p>
+
+    <form id="loginForm">
+
+      <label for="email">E-mail</label>
+      <input
+              type="email"
+              id="email"
+              placeholder="seu@email.com"
+              required
+      >
+
+      <label for="senha">Senha</label>
+      <input
+              type="password"
+              id="senha"
+              placeholder="Sua senha"
+              required
+      >
+
+      <button type="submit">
+        Entrar
+      </button>
+
+    </form>
+
+    <p id="mensagem"></p>
+
+  </div>
+
+</div>
+
+<script>
+
+  document
+          .getElementById("loginForm")
+          .addEventListener("submit", async function(event) {
+
+            event.preventDefault();
+
+            const email =
+                    document.getElementById("email").value;
+
+            const senha =
+                    document.getElementById("senha").value;
+
+            const response = await fetch("/login", {
+
+              method: "POST",
+
+              headers: {
+                "Content-Type": "application/json"
+              },
+
+              body: JSON.stringify({
+                email: email,
+                senha: senha
+              })
+
+            });
+
+            if (response.ok) {
+
+              window.location.href = "/";
+
+            } else {
+
+              document.getElementById("mensagem")
+                      .innerText = "E-mail ou senha inválidos";
+
+            }
+
+          });
+
+</script>
+
+</body>
+</html>
