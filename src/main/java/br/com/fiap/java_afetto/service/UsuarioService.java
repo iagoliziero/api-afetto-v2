@@ -10,6 +10,7 @@ import br.com.fiap.java_afetto.model.Usuario;
 import br.com.fiap.java_afetto.model.endereco.Endereco;
 import br.com.fiap.java_afetto.repository.UsuarioRepository;
 import br.com.fiap.java_afetto.repository.endereco.EnderecoRepository;
+import br.com.fiap.java_afetto.security.UsuarioLogadoService;
 import jakarta.persistence.EntityNotFoundException;
 
 import org.springframework.data.domain.Page;
@@ -26,17 +27,20 @@ public class UsuarioService {
     private final UsuarioMapper usuarioMapper;
     private final EnderecoRepository enderecoRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UsuarioLogadoService usuarioLogadoService;
 
     public UsuarioService(
             UsuarioRepository usuarioRepository,
             UsuarioMapper usuarioMapper,
             EnderecoRepository enderecoRepository,
-            PasswordEncoder passwordEncoder
+            PasswordEncoder passwordEncoder,
+            UsuarioLogadoService usuarioLogadoService
     ) {
         this.usuarioRepository = usuarioRepository;
         this.usuarioMapper = usuarioMapper;
         this.enderecoRepository = enderecoRepository;
         this.passwordEncoder = passwordEncoder;
+        this.usuarioLogadoService = usuarioLogadoService;
     }
 
     public UsuarioResponse create(UsuarioRequest usuarioRequest) {
@@ -85,6 +89,13 @@ public class UsuarioService {
                 );
 
         return usuarioMapper.usuarioToResponse(usuario);
+    }
+
+    public UsuarioResponse readLogado() {
+
+        return usuarioMapper.usuarioToResponse(
+                usuarioLogadoService.buscarUsuarioLogado()
+        );
     }
 
     public Page<UsuarioLista> read(Pageable pageable) {

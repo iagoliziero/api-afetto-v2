@@ -19,7 +19,7 @@ public class VacinaMapper {
         Link linkVacinas =
                 linkTo(
                         methodOn(VacinaController.class)
-                                .readVacinas(0, 50)
+                                .readVacinas(0, 50, null)
                 )
                         .withRel("Lista de vacinas");
 

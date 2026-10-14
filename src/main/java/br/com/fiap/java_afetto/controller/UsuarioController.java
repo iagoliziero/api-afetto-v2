@@ -45,6 +45,12 @@ public class UsuarioController {
         return ResponseEntity.status(HttpStatus.CREATED).body(usuarioService.create(usuarioRequest));
     }
 
+    @Operation(summary = "Busca o usuário logado")
+    @GetMapping("/me")
+    public ResponseEntity<UsuarioResponse> readUsuarioLogado() {
+        return ResponseEntity.ok(usuarioService.readLogado());
+    }
+
     @Operation(summary = "Busca um usuário por id")
     @GetMapping("/{id}")
     public ResponseEntity<UsuarioResponse> readUsuario(@PathVariable UUID id) {

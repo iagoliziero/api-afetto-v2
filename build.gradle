@@ -29,6 +29,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-flyway'
 	runtimeOnly 'com.mysql:mysql-connector-j'
+	// Banco H2 em memória usado SOMENTE nos testes (CI sem depender do MySQL da nuvem)
+	testRuntimeOnly 'com.h2database:h2'
 	testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
 	testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
@@ -36,4 +38,6 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+	// Os testes rodam com o perfil "test" (src/test/resources/application-test.properties)
+	systemProperty 'spring.profiles.active', 'test'
 }

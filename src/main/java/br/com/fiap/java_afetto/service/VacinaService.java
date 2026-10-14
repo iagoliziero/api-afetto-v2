@@ -95,6 +95,13 @@ public class VacinaService {
                 .map(vacinaMapper::vacinaToResponseLista);
     }
 
+    public Page<VacinaLista> readPorPet(UUID idPet, Pageable pageable) {
+
+        return vacinaRepository
+                .findByPet_Id(idPet, pageable)
+                .map(vacinaMapper::vacinaToResponseLista);
+    }
+
     public VacinaResponse update(
             UUID id,
             VacinaRequest request

@@ -1,5 +1,6 @@
 package br.com.fiap.java_afetto.exception;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -20,6 +21,14 @@ public class ValidationExceptionHandler {
             errors.put(fieldError.getField(), fieldError.getDefaultMessage());
         }
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+    }
+
+    // "Não encontrado" (lançado pelos services) responde 404 em vez de cair no 500 genérico
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleEntityNotFoundException(EntityNotFoundException ex) {
+        Map<String, String> erro = new HashMap<>();
+        erro.put("erro", ex.getMessage());
+        return new ResponseEntity<>(erro, HttpStatus.NOT_FOUND);
     }
 
 }

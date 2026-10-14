@@ -47,10 +47,18 @@ public class VacinaController {
     @GetMapping
     public ResponseEntity<Page<VacinaLista>> readVacinas(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "50") int size
+            @RequestParam(defaultValue = "50") int size,
+            @RequestParam(required = false) UUID idPet
     ) {
 
         Pageable pageable = PageRequest.of(page, size);
+
+        // Com ?idPet= devolve só as vacinas daquele pet; sem ele, a lista geral de antes
+        if (idPet != null) {
+            return ResponseEntity.ok(
+                    vacinaService.readPorPet(idPet, pageable)
+            );
+        }
 
         return ResponseEntity.ok(
                 vacinaService.read(pageable)
