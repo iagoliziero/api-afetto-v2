@@ -289,7 +289,7 @@ SELECT * FROM TBL_VACINA;
 - 💻 Código-fonte: https://github.com/iagoliziero/api-afetto-v2
 - 🔁 Projeto no Azure DevOps: https://dev.azure.com/MR564063/Sprint%204%20%E2%80%93%20Azure%20DevOps
 - 🌐 App no ar: https://afetto-api-564063.azurewebsites.net
-- 🎥 Vídeo da Sprint 4: _link do YouTube_
+- 🎥 Vídeo da Sprint 4: https://www.youtube.com/watch?v=GWM6qBhcP9Q
 
 ---
 
